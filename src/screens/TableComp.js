@@ -285,6 +285,12 @@ const TableComp = () => {
             };
           });
           //updatedData=mappedData.shift()
+          //console.log(updatedData.length)
+          mappedData.splice(0, 1); // Remove the first object from the array
+
+          //console.log(dataArray);
+
+          console.log(mappedData)
   
           setEmployeeData(mappedData);
           //console.log('renderData', mappedData); // console the
