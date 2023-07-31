@@ -1,5 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React,{useContext} from 'react';
+import {AuthContext} from '../context/AuthContext';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -30,7 +31,9 @@ const Routes = () => {
   const AttendanceStack = createNativeStackNavigator();
   const LeaveStack = createNativeStackNavigator();
   const NotificationStack = createNativeStackNavigator();
+  const LoginStack=createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
+  const {isLogin, userInfo} = useContext(AuthContext);
 
   const HomeScreen = () => (
     <HomeStack.Navigator initialRouteName="Header">
@@ -112,8 +115,24 @@ const Routes = () => {
       />
     </NotificationStack.Navigator>
   );
+  const LoginStackNavigator = () => (
+    <LoginStack.Navigator>
+      <LoginStack.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+       <LoginStack.Screen
+        name="LoadingScreen"
+        component={SplashScreen}
+        options={{ headerShown: false }}
+      />
+     
+    </LoginStack.Navigator>
+  );
   return (
     <NavigationContainer>
+      {isLogin?(
       <Tab.Navigator
         screenOptions={{
           tabBarShowLabel: true,
@@ -152,6 +171,7 @@ const Routes = () => {
           component={HomeScreen}
           options={{
             headerShown: false,
+            unmountOnBlur: true,
             tabBarIcon: ({focused}) => (
               // <Icon name="fa-solid fa-house"/>
               <Icon
@@ -168,6 +188,8 @@ const Routes = () => {
           component={AttendanceScreen}
           options={{
             headerShown: false,
+            unmountOnBlur: true ,
+            unmountOnBlur: true,
             tabBarIcon: ({focused}) => (
               // <Icon
               //   name="user-check"
@@ -214,7 +236,10 @@ const Routes = () => {
           }}
         />
       </Tab.Navigator>
+      ):(
+       <LoginStackNavigator/>    )}
     </NavigationContainer>
+    
   );
 };
 

@@ -6,6 +6,7 @@ import QuestionConatiner from '../component/QuestionConatiner';
 
 import axios from 'axios';
 import LoadingScreen from './LoadingScreen';
+import { BASE_URL } from '../ConfigLinks';
 const Assessment = ({navigation}) => {
   const { userInfo, isLoading, logout } = useContext(AuthContext);
   const[loding,setLoading]=useState(true)
@@ -16,7 +17,7 @@ const Assessment = ({navigation}) => {
     const [questions, setQuestions] = useState([]);
    
     const getQuestion=()=>{
-      axios.post("https://hrms-backend-04fw.onrender.com/api/v1/quiz/getQuiz",
+      axios.post(`${BASE_URL}/quiz/getQuiz`,
       {
         "jobProfileId":jobProfileId
       }
@@ -42,7 +43,7 @@ const Assessment = ({navigation}) => {
   };
   const SumbitAnswer=()=>{
     setLoading(true)
-    axios.post("https://hrms-backend-04fw.onrender.com/api/v1/quiz/submitAnswer",
+    axios.post(`${BASE_URL}/quiz/submitAnswer`,
     {
       "answers":selectedOptions,
       "jobProfileId":jobProfileId

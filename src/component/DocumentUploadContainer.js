@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import Icon from 'react-native-vector-icons/Feather';
 import DocumentPicker from 'react-native-document-picker'
 import axios from 'axios'
+import { BASE_URL } from '../ConfigLinks';
 
 
 const DocumentUpload= ({document_name,onLoad}) => {
@@ -45,7 +46,7 @@ const DocumentUpload= ({document_name,onLoad}) => {
           
     
           const response = await axios.post(
-            'https://hrms-backend-04fw.onrender.com/api/v1/employee/docs/upload',
+            `${BASE_URL}/employee/docs/upload`,
             formData,
           );
           onLoad(false)

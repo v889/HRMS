@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  RefreshControl,
+  Alert,
 } from 'react-native';
 import {Dimensions} from 'react-native';
 const screenHeight = Dimensions.get('window').height;
@@ -15,56 +17,81 @@ import {AuthContext} from '../context/AuthContext';
 import CardArray from './CardArray';
 import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios';
-
+import {BASE_URL} from '../ConfigLinks';
+import { showMessage} from 'react-native-flash-message';
 const Attendance = ({navigation}) => {
   const {isLogin, userInfo} = useContext(AuthContext);
+  const [refreshing, setRefreshing] = useState(false);
+  const [cardArrayRefresh, setCardArrayRefresh] = useState(false);
   const [dataAttendance, setDataAttendance] = useState({
-    countIn: 0,
-    countOut: 0,
+    totalPresent: 0,
+    totalAbsent: 0,
+    totalEmployees: 0,
+    working: 0,
   });
   useEffect(() => {
     fetchDataAttendaceNumber();
   }, []);
-  
-
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchDataAttendaceNumber(); // Refresh the attendance data
+    setCardArrayRefresh(prev => !prev); // Toggle the state to refresh the CardArray component
+    setRefreshing(false);
+  };
   const fetchDataAttendaceNumber = async () => {
     try {
-      // const response = await axios.get(
-      //   'https://hrms-backend-04fw.onrender.com/api/v1/attendance/getPunchInPunchOut',
-      // );
-      // const data = response.data;
-      // console.log(data)
-      const apiUrl = 'https://chawlacomponents.com/api/v1/attendance/getPunchInPunchOut';
-
-      const response = await fetch(apiUrl);
-
-      const jsonData = await response.json();
-
-      //console.log('AAKash DOUBT',jsonData);
-      setDataAttendance(jsonData);
-      
+      const response = await axios.get(
+        `${BASE_URL}/attendance/getPunchInPunchOut`,
+      );
+      const data = response.data;
+      const countIn = data.countIn;
+      const countOut = data.countOut;
+      const totalEmployees = data.totalEmployees;
+      const totalPresent = data.totalPresent;
+      const totalAbsent = totalEmployees - totalPresent;
+      const working = countIn - countOut;
+      setDataAttendance({
+        totalEmployees: totalEmployees,
+        totalPresent: totalPresent,
+        totalAbsent: totalAbsent,
+        working: working,
+      });
+      console.log('atttttttttnd', setDataAttendance);
     } catch (error) {
       console.error(error);
     }
   };
- 
   const screenHeight = Dimensions.get('window').height;
   const handleAttendance = () => {
     navigation.navigate('TableComp');
   };
-
   return (
+  
     <View style={{height: screenHeight * 0.8}}>
+      {isLogin?(
       <SafeAreaView style={styles.container}>
         <Navbar />
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+        >
           <View>
             <TouchableOpacity style={styles.Ftext} onPress={handleAttendance}>
               <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
               >
                 <Text
-                  style={{color: '#283093', fontSize: 16, fontWeight: '500'}}
+                  style={{
+                    color: '#283093',
+                    fontSize: 16,
+                    fontWeight: '500',
+                  }}
                 >
                   View Attendance Records
                 </Text>
@@ -81,7 +108,7 @@ const Attendance = ({navigation}) => {
                 <View style={styles.subdiv3}>
                   <View style={styles.subdiv4}>
                     <Text style={styles.num}>
-                      {dataAttendance.countIn}
+                      {dataAttendance.totalPresent}
                     </Text>
                     <Feather name="arrow-up" size={18} color={'#4B0082'} />
                   </View>
@@ -91,22 +118,39 @@ const Attendance = ({navigation}) => {
               <View style={styles.subdiv2}>
                 <View style={styles.subdiv3}>
                   <View style={styles.subdiv4}>
-                    <Text style={styles.num}>
-                      {dataAttendance.countOut}
-                    </Text>
+                    <Text style={styles.num}>{dataAttendance.totalAbsent}</Text>
                     <Feather name="arrow-up" size={18} color={'#4B0082'} />
                   </View>
                   <Text style={styles.numTxt}>Absent</Text>
                 </View>
               </View>
+              <View style={styles.subdiv2}>
+                <View style={styles.subdiv3}>
+                  <View style={styles.subdiv4}>
+                    <Text style={styles.num}>{dataAttendance.working}</Text>
+                    <Feather name="arrow-up" size={18} color={'#4B0082'} />
+                  </View>
+                  <Text style={styles.numTxt}>Working</Text>
+                </View>
+              </View>
             </View>
           </View>
-
-          {isLogin ? <CardArray /> : <Text> </Text>}
-
+          {isLogin ? (
+            <CardArray onRefresh={cardArrayRefresh} />
+          ) : (
+            <Text> </Text>
+          )}
           {/* {userInfo.employee.role==='supervisor'|| userInfo.employee.role==='admin'? <CardArray /> : <Text> </Text>} */}
         </ScrollView>
+       
       </SafeAreaView>
+       ): (
+        showMessage({
+          message:'Login First',
+          duration:3000,
+          status:'warning',
+        })
+      )}
     </View>
   );
 };
@@ -125,16 +169,17 @@ const styles = StyleSheet.create({
     // marginRight:24,
     justifyContent: 'center',
     marginTop: 15,
-    marginLeft: 30,
+    flex: 1,
+    marginLeft: '2%',
   },
   scrollContent: {
     flexGrow: 2,
-    paddingBottom: 4,
+    paddingBottom: 1,
     // paddingVertical: 20,
     // marginBottom: 10,
   },
   container: {
-    // flex: 1,
+    flex: 1,
     justifyContent: 'center',
     //  alignItems:'center'
     // paddingHorizontal: 25,
@@ -143,18 +188,16 @@ const styles = StyleSheet.create({
   div1: {
     paddingTop: 35,
   },
-
   subdiv1: {
     flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 13,
+    paddingHorizontal: 12, //12
+    paddingVertical: 13, //13
     justifyContent: 'space-evenly',
   },
-
   subdiv2: {
-    width: 20,
+    // width: 20,
     height: 80,
-    width: 160,
+    width: '30%',
     padding: 8,
     borderRadius: 9,
     borderWidth: 0.5,
@@ -163,7 +206,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   subdiv3: {
     flexDirection: 'column',
     justifyContent: 'center',
@@ -177,7 +219,6 @@ const styles = StyleSheet.create({
   },
   num: {color: '#4B0082', fontSize: 20, fontWeight: 'bold'},
   numTxt: {fontSize: 11, fontWeight: '400', color: '#000'},
-
   HeadTxt: {
     fontSize: 20,
     fontWeight: '700',
@@ -186,5 +227,3 @@ const styles = StyleSheet.create({
     marginLeft: 17,
   },
 });
-
-

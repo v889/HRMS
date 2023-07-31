@@ -3,25 +3,32 @@ import { View, StyleSheet, FlatList, TouchableOpacity, Text } from 'react-native
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Navbar from './Navbar';
 import { AuthContext } from '../context/AuthContext';
+import { BASE_URL } from '../ConfigLinks';
+import axios from 'axios';
+import { showMessage } from 'react-native-flash-message';
 
 const NotificationsScreen = () => {
   const [notifications, setNotifications] = useState([]);
-  const { isLogin } = useContext(AuthContext);
-
+  const { isLogin,userInfo } = useContext(AuthContext);
+  let id;
+  console.log(userInfo);
+  if(userInfo.admin){
+    id=userInfo?.admin?._id;
+  }else{
+    id=userInfo?.employee?._id;
+  }
+  console.log(notifications);
   useEffect(() => {
     // Fetch notifications from the API
-    if (isLogin) {
-      fetch('https://hrms-backend-04fw.onrender.com/api/v1/notifications')
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            setNotifications(data.notifications);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+    const fetchNotifications = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/notifications/${id}`);
+        setNotifications(res.data.notification);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNotifications();
   }, [isLogin]);
 
   const renderNotification = ({ item }) => {
@@ -82,7 +89,11 @@ const NotificationsScreen = () => {
           </View>
         </>
       ) : (
-        alert('Login First')
+        showMessage({
+          message:'Login First',
+          duration:3000,
+          status:'warning',
+        })
       )}
     </View>
   );

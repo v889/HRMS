@@ -3,23 +3,28 @@ import { View, Image, StyleSheet, Button, TouchableOpacity } from 'react-native'
 import { AuthContext } from '../context/AuthContext';
 import Home from './HomeScreen';
 import { Text } from 'react-native';
-const Header = ({navigation}) => {
-  const {login,isLogin}=useContext(AuthContext)
+const Header = ({ navigation }) => {
+  const { login, isLogin, logout, loginres } = useContext(AuthContext);
+  const handleLogout = () => {
+    logout();
+    alert('logout successfully');
+    navigation.navigate('LoginScreen');
+  };
   return (
     <View style={styles.header}>
       <View style={styles.container}>
         <Image source={require('../../assets/logo.png')} style={styles.logo} />
         {isLogin ? (
-  <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-    <Text>Logout</Text>
-  </TouchableOpacity>
-) : (
-  <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-    <Text>Login</Text>
-  </TouchableOpacity>
-)}
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={{color:'black'}}>Logout</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+            <Text style={{color:'black'}}>Login</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      <Home navigation={navigation}/>
+      <Home navigation={navigation} />
     </View>
   );
 };
@@ -27,10 +32,8 @@ const Header = ({navigation}) => {
 Button
           title="Login"
           onPress={() => navigation.navigate('LoginScreen')}
-          titleStyle={styles.button}*/   
-
+          titleStyle={styles.button}*/
 export default Header;
-
 const styles = StyleSheet.create({
   container: {
     height: 60,
@@ -45,5 +48,5 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: 5,
-  }
+  },
 });

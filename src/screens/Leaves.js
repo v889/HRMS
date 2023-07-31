@@ -46,25 +46,25 @@ const Leaves = ({ navigation }) => {
 
             </View>
             <TouchableOpacity style={styles.Ftext}
-                onPress={() => navigation.navigate('ViewLeaves')}
-              >
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-              
+              onPress={() => navigation.navigate('ViewLeaves')}
+            >
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+
                 <Text style={{ color: '#283093', fontSize: 16, fontWeight: '500' }}>
 
                   View Leave Records
                 </Text>
                 <Feather name="edit-2" color={'#283093'} />
-                </View>
-              </TouchableOpacity>
               </View>
-             <View style={{justifyContent:'center',alignItems:'center',  }}>
-              {isLogin ? <ApproveLeave /> : <Text> </Text>}
-             </View>
+            </TouchableOpacity>
+          </View>
+          <View style={{ justifyContent: 'center', alignItems: 'center', }}>
+            {isLogin ? <ApproveLeave /> : <Text> </Text>}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

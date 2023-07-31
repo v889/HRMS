@@ -5,6 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 import axios from 'axios'
 import ContainerImage from '../component/ContainerImage'
 import Icon from 'react-native-vector-icons/AntDesign'
+import { BASE_URL } from '../ConfigLinks';
 
 
 
@@ -19,12 +20,15 @@ const DocumentView = ({ navigation: { goBack,navigate } }) => {
   const { userInfo, isLoading, logout } = useContext(AuthContext);
   const { employee } = userInfo;
   const Id = employee ? employee._id: 'null';
+  useEffect(() => {
+    getDocument();
+   },[]);
   
   
 
   
   const getDocument=()=>{
-    axios.get(`https://hrms-backend-04fw.onrender.com/api/v1/employee/docs//getProfile/${Id}`,
+    axios.get(`${BASE_URL}/employee/docs//getProfile/${Id}`,
        
     ).then(res=>{
       //console.log(res.data);
@@ -35,7 +39,7 @@ const DocumentView = ({ navigation: { goBack,navigate } }) => {
       })
 
   }
-  getDocument();
+
   return (
     <View style={{flex:1}}>
       <View style ={{flexDirection:"row",marginTop:50,gap:15,marginLeft:20}}>

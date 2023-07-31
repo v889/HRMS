@@ -25,17 +25,17 @@ const handleReattemptQuiz = () => {
     <View style={{flex:1}}>
       <Text style={styles.mainHeadingStyle}>You passed the assesment!</Text>
       <Text style={{fontSize:15,fontWeight:"700",color:"black",marginLeft:20,marginTop:10,color:"#27AE60"}}>Score:{Score}/{MaxScore}</Text>
-      
+      {/*
      <FlatList data={question} renderItem={(item, index) => (
        
        <ResultConatiner
        item={item.item} 
        options={item.item.options} 
        index={item.index} 
-       selectedOption={selectedOption[item.index]}
+       //selectedOption={selectedOption[item.index]}
       />
        
-     )} />
+     )} />*/}
      <TouchableOpacity onPress={()=>navigation.navigate("Training")} style={styles.GoToButton}>
         <Text style={{color:"#283093",fontSize:15}}>Go Back to Training Resources</Text>
       </TouchableOpacity>

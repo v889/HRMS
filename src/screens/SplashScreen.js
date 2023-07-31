@@ -25,9 +25,10 @@ import { ActivityIndicator, View, StyleSheet, Dimensions } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import Header from './Header';
 import { Image } from 'react-native';
+import LoginScreen from './Login';
 
 const SplashScreen = ({ navigation }) => {
-  const { isLoading } = useContext(AuthContext);
+  const { isLoading ,isLogin} = useContext(AuthContext);
 
   return (
     isLoading ? (
@@ -38,7 +39,7 @@ const SplashScreen = ({ navigation }) => {
         </View>
       </View>
     ) : (
-      navigation.navigate('Header')
+     isLogin?navigation.navigate('Header'):<LoginScreen/>
     )
   );
 };

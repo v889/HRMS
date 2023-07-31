@@ -1,13 +1,28 @@
 import { StyleSheet, Text, View,TouchableOpacity,FlatList,Image } from 'react-native'
-import React,{useContext} from 'react'
+import React,{useContext, useState,useEffect} from 'react'
 import { AuthContext } from '../context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ContainerImage from '../component/ContainerImage';
-const link="https://chawla-hrms-bucket1.s3.amazonaws.com/uploads/675a20fa-74c9-4748-93b4-5fa16f27ba86-e36fc922-b20a-4ab3-b370-5552cfef1103-sample (1).pdf"
-  
-  
+import { BASE_URL } from '../ConfigLinks';
+import axios from 'axios';
 const Training = ({navigation}) => {
+  useEffect(() => {
+   getDocument();
+  },[]);
   const { isLogin } = useContext(AuthContext);
+  const [document,setDocument]=useState([])
+  const getDocument=()=>{
+    axios.get(`${BASE_URL}training/`,
+       
+    ).then(res=>{
+      //console.log(res.data);
+      setDocument(res.data?.trainingData);
+      //console.log(documents)
+      }).catch((error)=>{
+        console.log(error)
+      })
+
+  }
   
   
    if(isLogin){
@@ -35,7 +50,7 @@ const Training = ({navigation}) => {
     
     <FlatList
     numColumns={2}
-    data={[1,2,3,4,5,6,7,8,9,10]}
+    data={document}
     style={styles.grid}
     renderItem={({item, index}) => (
   
